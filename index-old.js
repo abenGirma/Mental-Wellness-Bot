@@ -1,10 +1,9 @@
-const { Telegraf, Scenes, session, wizard, Stage } = require('telegraf');
-const { message } = require('telegraf/filters');
-const { bodyParser } = require('body-parser');
-const axios = require('axios');
+const { Telegraf, Scenes, session} = require('telegraf')
+const axios = require('axios')
+require('dotenv').config()
 
-const express = require('express');
-const app = express();
+const express = require('express')
+const app = express()
 
 
 app.use(express.json())
@@ -12,24 +11,24 @@ app.use(express.urlencoded({ extended: true }))
 
 
 app.get('/', (req, res) => {
-  res.send('Hello World!');
-});
+  res.send('Hello World!')
+})
 
 
 
-const port = 3000;
+const port = 3000
 app.listen(port, () => {
-  console.log(`Server running at http://localhost:3000`);
-});
+  console.log(`Server running at http://localhost:3000`)
+})
 
 
-const api = process.env['RESTapi']; //Here we will use the backend
-const token = process.env['Token'];
-const bot = new Telegraf(token);
+const api = process.env.API || ''         //Here we will use the backend
+const token = process.env.BOT_TOKEN || ''
+const bot = new Telegraf(token)
 
 
 bot.start((ctx) => {
-  const chatId = ctx.update.message.chat.id;
+  const chatId = ctx.update.message.chat.id
 
   ctx.telegram.sendMessage(chatId, "Welcome to Mental Wellness bot", {
     parse_mode: "markdown",
@@ -40,22 +39,22 @@ bot.start((ctx) => {
         [{ text: "Admin", callback_data: "Admin" }]
       ]
     }
-  });
+  })
 
-});
+})
 
 /** 
  * Service Provider Section
 */
 
 bot.action('serviceProvider', (ctx) => {
-  const chatId = ctx.update.callback_query.message.chat.id;
+  const chatId = ctx.update.callback_query.message.chat.id
   try {
     ctx.deleteMessage()
     //console.log(ctx)
   } catch (error) {
-    console.log(error);
-  };
+    console.log(error)
+  }
 
   ctx.telegram.sendMessage(chatId, "Login before proceeding.", {
     parse_mode: "HTML",
@@ -65,39 +64,39 @@ bot.action('serviceProvider', (ctx) => {
         [{ text: "Back to MainMenu", callback_data: "Main" }]
       ]
     }
-  });
+  })
 
 })
 
 
 //Service provider Login
 bot.action('login_serviceprovider', (ctx) => {
-  ctx.scene.enter('serviceProviderLogin-wizard'); //Enter a scene where SVP can login and authenticate.
-});
+  ctx.scene.enter('serviceProviderLogin-wizard') //Enter a scene where SVP can login and authenticate.
+})
 
 
 //WizardScene to Login and Verify Service Providers
 const serviceProviderLoginWizard = new Scenes.WizardScene('serviceProviderLogin-wizard',
   (ctx) => {
-    ctx.reply("Please enter your email to login?");
+    ctx.reply("Please enter your email to login?")
     //To store the input
-    ctx.scene.session.serviceProviderAuth = {};
+    ctx.scene.session.serviceProviderAuth = {}
     //Store the telegram user id
-    ctx.scene.session.serviceProviderAuth.telegramUserId = ctx.from.id;
-    return ctx.wizard.next();
+    ctx.scene.session.serviceProviderAuth.telegramUserId = ctx.from.id
+    return ctx.wizard.next()
   },
      (ctx) => {
     //save email
-    ctx.scene.session.serviceProviderAuth.email = ctx.message.text;
+    ctx.scene.session.serviceProviderAuth.email = ctx.message.text
 
     // Authenticate email with backend
     axios.post("/api/service-provider/login", ctx.scene.session.serviceProviderAuth.email)
       .then(function(response) {
           if(response.status == 'success'){
             ctx.telegram.sendMessage(ctx.scene.session.serviceProviderAuth.telegramUserId,
-                                     "You should receive an email with a verification token. Please enter the verification token.");
+                                     "You should receive an email with a verification token. Please enter the verification token.")
     
-            return ctx.wizard.next();
+            return ctx.wizard.next()
             
           }else if (response.status == 'error'){
             ctx.telegram.sendMessage(ctx.scene.session.serviceProviderAuth.telegramUserId, "Error occurred please try again",
@@ -109,7 +108,7 @@ const serviceProviderLoginWizard = new Scenes.WizardScene('serviceProviderLogin-
                 [{ text: "Back to MainMenu", callback_data: "Main" }]
               ]
             }
-            });
+            })
             
           }      
         })
@@ -117,7 +116,7 @@ const serviceProviderLoginWizard = new Scenes.WizardScene('serviceProviderLogin-
   },
      (ctx) => {
        
-    ctx.scene.session.serviceProviderAuth.token = ctx.message.text;
+    ctx.scene.session.serviceProviderAuth.token = ctx.message.text
 
     // Verify token 
     axios.post("/api/service-provider/verify", ctx.scene.session.serviceProviderAuth.token)
@@ -134,7 +133,7 @@ const serviceProviderLoginWizard = new Scenes.WizardScene('serviceProviderLogin-
                 [{ text: "Back to MainMenu", callback_data: "Main" }]
               ]
             }
-            });   
+            })   
             
           }else if (response.status == 'error'){
             ctx.telegram.sendMessage(ctx.scene.session.serviceProviderAuth.telegramUserId, "Error occurred please try again",
@@ -146,14 +145,14 @@ const serviceProviderLoginWizard = new Scenes.WizardScene('serviceProviderLogin-
                 [{ text: "Back to MainMenu", callback_data: "Main" }]
               ]
             }
-            });
+            })
             
           } 
        })
     
-    return ctx.scene.leave();// leave the scene 
+    return ctx.scene.leave()// leave the scene 
   }                                                          
-);
+)
 
 //TODO: add actions for setAppointment, getAppointment, getClientRequests
 
@@ -164,13 +163,13 @@ const serviceProviderLoginWizard = new Scenes.WizardScene('serviceProviderLogin-
  */
 
 bot.action('userStudent', (ctx) => {
-  const chatId = ctx.update.callback_query.message.chat.id;
+  const chatId = ctx.update.callback_query.message.chat.id
   try {
     ctx.deleteMessage()
     //console.log(ctx)
   } catch (error) {
-    console.log(error);
-  };
+    console.log(error)
+  }
 
   ctx.telegram.sendMessage(chatId, "Login to your account or Register before proceeding", {
     parse_mode: "HTML",
@@ -181,7 +180,7 @@ bot.action('userStudent', (ctx) => {
         [{ text: "Back to MainMenu", callback_data: "Main" }]
       ]
     }
-  });
+  })
 
 })
 
@@ -195,13 +194,13 @@ bot.action('userStudent', (ctx) => {
 */
 
 bot.action('Admin', (ctx) => {
-  const chatId = ctx.update.callback_query.message.chat.id;
+  const chatId = ctx.update.callback_query.message.chat.id
   try {
     ctx.deleteMessage()
     //console.log(ctx)
   } catch (error) {
-    console.log(error);
-  };
+    console.log(error)
+  }
 
 
   ctx.telegram.sendMessage(chatId, "Login to your acccount or Register before proceeding", {
@@ -214,60 +213,60 @@ bot.action('Admin', (ctx) => {
         [{ text: "Back to MainMenu", callback_data: "Main" }]
       ]
     }
-  });
+  })
 
 })
 
 //WizardScene to Register Admin
 const adminWizard = new Scenes.WizardScene('admin-wizard',
   (ctx) => {
-    ctx.reply("What is your full name?");
+    ctx.reply("What is your full name?")
     //To store the input
-    ctx.scene.session.admin = {};
+    ctx.scene.session.admin = {}
     //Store the telegram user id
-    ctx.scene.session.admin.telegramUserId = ctx.from.id;
-    return ctx.wizard.next();
+    ctx.scene.session.admin.telegramUserId = ctx.from.id
+    return ctx.wizard.next()
   },
   (ctx) => {
     //Store entered name
-    ctx.scene.session.admin.fullName = ctx.message.text;
-    ctx.reply("Enter your email?");
-    return ctx.wizard.next();
+    ctx.scene.session.admin.fullName = ctx.message.text
+    ctx.reply("Enter your email?")
+    return ctx.wizard.next()
   },
   (ctx) => {
     //store entered email
-    ctx.scene.session.admin.email = ctx.message.text;
-    ctx.reply("What is your speciality?");
-    return ctx.wizard.next();
+    ctx.scene.session.admin.email = ctx.message.text
+    ctx.reply("What is your speciality?")
+    return ctx.wizard.next()
   },
   (ctx) => {
     //store speciality
-    ctx.scene.session.admin.speciality = ctx.message.text;
+    ctx.scene.session.admin.speciality = ctx.message.text
 
-    ctx.reply("Enter your working hour?");
-    return ctx.wizard.next();
+    ctx.reply("Enter your working hour?")
+    return ctx.wizard.next()
   },
      (ctx) => {
     //store working hour
-    ctx.scene.session.admin.workingHour = ctx.message.text;
+    ctx.scene.session.admin.workingHour = ctx.message.text
 
-    ctx.reply("What is your prefered communication - Telegram or email?");
-    return ctx.wizard.next();
+    ctx.reply("What is your prefered communication - Telegram or email?")
+    return ctx.wizard.next()
   },
      (ctx) => {
     //store preferred communication
-    ctx.scene.session.admin.communication = ctx.message.text;
+    ctx.scene.session.admin.communication = ctx.message.text
 
-    ctx.reply("Enter your phone number?");
-    return ctx.wizard.next();
+    ctx.reply("Enter your phone number?")
+    return ctx.wizard.next()
   },
      (ctx) => {
     //store phone number
-    ctx.scene.session.admin.phoneNumber = ctx.message.text;
+    ctx.scene.session.admin.phoneNumber = ctx.message.text
 
     // send data to backend
     axios.post("/api/admin/addAdmin", ctx.scene.session.admin).then(function(response) {
-      console.log(response.data);
+      console.log(response.data)
     })
     ctx.telegram.sendMessage(ctx.scene.session.admin.telegramUserId,
       "New Admin Added" + "\n" +
@@ -285,62 +284,62 @@ const adminWizard = new Scenes.WizardScene('admin-wizard',
             [{ text: "Back to MainMenu", callback_data: "Main" }]
           ]
         }
-      });
+      })
 
-    return ctx.scene.leave();// leave the scene 
+    return ctx.scene.leave()// leave the scene 
   }
-);
+)
 
 //WizardScene to Register ServiceProvider
 const serviceProviderWizard = new Scenes.WizardScene('serviceProvider-wizard',
   (ctx) => {
-    ctx.reply("What is your full name?");
+    ctx.reply("What is your full name?")
     //To store the input
-    ctx.scene.session.serviceProvider = {};
+    ctx.scene.session.serviceProvider = {}
     //Store the telegram user id
-    ctx.scene.session.serviceProvider.telegramUserId = ctx.from.id;
-    return ctx.wizard.next();
+    ctx.scene.session.serviceProvider.telegramUserId = ctx.from.id
+    return ctx.wizard.next()
   },
   (ctx) => {
     //Store entered name
-    ctx.scene.session.serviceProvider.fullName = ctx.message.text;
-    ctx.reply("Enter your email?");
-    return ctx.wizard.next();
+    ctx.scene.session.serviceProvider.fullName = ctx.message.text
+    ctx.reply("Enter your email?")
+    return ctx.wizard.next()
   },
   (ctx) => {
     //store entered email
-    ctx.scene.session.serviceProvider.email = ctx.message.text;
-    ctx.reply("What is your speciality?");
-    return ctx.wizard.next();
+    ctx.scene.session.serviceProvider.email = ctx.message.text
+    ctx.reply("What is your speciality?")
+    return ctx.wizard.next()
   },
   (ctx) => {
     //store speciality
-    ctx.scene.session.serviceProvider.speciality = ctx.message.text;
+    ctx.scene.session.serviceProvider.speciality = ctx.message.text
 
-    ctx.reply("Enter your working hour?");
-    return ctx.wizard.next();
+    ctx.reply("Enter your working hour?")
+    return ctx.wizard.next()
   },
      (ctx) => {
     //store working hour
-    ctx.scene.session.serviceProvider.workingHour = ctx.message.text;
+    ctx.scene.session.serviceProvider.workingHour = ctx.message.text
 
-    ctx.reply("What is your prefered communication - Telegram or email?");
-    return ctx.wizard.next();
+    ctx.reply("What is your prefered communication - Telegram or email?")
+    return ctx.wizard.next()
   },
      (ctx) => {
     //store preferred communication
-    ctx.scene.session.serviceProvider.communication = ctx.message.text;
+    ctx.scene.session.serviceProvider.communication = ctx.message.text
 
-    ctx.reply("Enter your phone number?");
-    return ctx.wizard.next();
+    ctx.reply("Enter your phone number?")
+    return ctx.wizard.next()
   },
      (ctx) => {
     //store phone number
-    ctx.scene.session.serviceProvider.phoneNumber = ctx.message.text;
+    ctx.scene.session.serviceProvider.phoneNumber = ctx.message.text
 
     // send data to backend
     axios.post("/api/admin/addServiceProvider", ctx.scene.session.serviceProvider).then(function(response) {
-      console.log(response.data);
+      console.log(response.data)
     })
     ctx.telegram.sendMessage(ctx.scene.session.serviceProvider.telegramUserId,
       "New Service Provider Added" + "\n" +
@@ -358,23 +357,23 @@ const serviceProviderWizard = new Scenes.WizardScene('serviceProvider-wizard',
             [{ text: "Back to MainMenu", callback_data: "Main" }]
           ]
         }
-      });
+      })
 
-    return ctx.scene.leave();// leave the scene 
+    return ctx.scene.leave()// leave the scene 
   }
-);
+)
 
-const stage = new Scenes.Stage([adminWizard, serviceProviderWizard, serviceProviderLoginWizard]);
-bot.use(session());
-bot.use(stage.middleware());
+const stage = new Scenes.Stage([adminWizard, serviceProviderWizard, serviceProviderLoginWizard])
+bot.use(session())
+bot.use(stage.middleware())
 
 bot.action('addAdmin', (ctx) =>
   ctx.scene.enter('admin-wizard')
-);
+)
 
 bot.action('addServiceProvider', (ctx) =>
   ctx.scene.enter('serviceProvider-wizard')
-);
+)
 
 //TODO: setup a wizard scene to login and verify Admin
 //TODO: add actions for getClientRequests and others...
@@ -385,13 +384,13 @@ bot.action('addServiceProvider', (ctx) =>
 */
 
 bot.action('medicalConsultation', (ctx) => {
-  const chatId = ctx.update.callback_query.message.chat.id;
+  const chatId = ctx.update.callback_query.message.chat.id
   try {
     ctx.deleteMessage()
     //console.log(chatId)
   } catch (error) {
-    console.log(error);
-  };
+    console.log(error)
+  }
 
 
   ctx.telegram.sendMessage(chatId, "You can contact - " + "\n" + "Click on the button to go to channel.", {
@@ -402,21 +401,21 @@ bot.action('medicalConsultation', (ctx) => {
         [{ text: "Back to MainMenu", callback_data: "Main" }]
       ]
     }
-  });
+  })
 
 })
 
 //To forward request to channels (If we are still going with this idea.)
 bot.action('medicalConsultationChannel', (ctx) => {
-  const chatId = ctx.update.callback_query.message.chat.id;
-  //const medicalConsultationChannelId = -1001546278883;
-  const medicalCOnsultationChannelId = process.env['medChannelId'];
+  const chatId = ctx.update.callback_query.message.chat.id
+  //const medicalConsultationChannelId = -1001546278883
+  const medicalCOnsultationChannelId = process.env['medChannelId']
   try {
     ctx.deleteMessage()
     //console.log(channelId)
   } catch (error) {
-    console.log(error);
-  };
+    console.log(error)
+  }
 
 
   ctx.telegram.sendMessage(medicalConsultationChannelId, "New message recieved from -", {
@@ -426,7 +425,7 @@ bot.action('medicalConsultationChannel', (ctx) => {
         [{ text: "Respond to user", callback_data: "respondInChannel" }]
       ]
     }
-  });
+  })
 
 
   ctx.telegram.sendMessage(chatId, "Message forwarded to channel", {
@@ -436,18 +435,18 @@ bot.action('medicalConsultationChannel', (ctx) => {
         [{ text: "Back to MainMenu", callback_data: "Main" }]
       ]
     }
-  });
+  })
 
 })
 
 bot.action('Main', (ctx) => {
-  const chatId = ctx.update.callback_query.message.chat.id;
+  const chatId = ctx.update.callback_query.message.chat.id
   try {
     ctx.deleteMessage()
     //console.log(chatId)
   } catch (error) {
-    console.log(error);
-  };
+    console.log(error)
+  }
 
   ctx.telegram.sendMessage(chatId, "Welcome to Mental Wellness bot", {
     parse_mode: "markdown",
@@ -458,8 +457,8 @@ bot.action('Main', (ctx) => {
         [{ text: "Admin", callback_data: "Admin" }]
       ]
     }
-  });
+  })
 })
 
 
-bot.launch();
+bot.launch()
