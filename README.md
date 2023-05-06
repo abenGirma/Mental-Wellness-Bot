@@ -1,4 +1,4 @@
-# Mental-Wellness-Bot
+# SAC-Wellness-Bot
 
 Welcome to SAC Mental Wellness Bot. This bot is developed by TASH SAC team and volunteer developers.
 To setup and get it running please follow the following instruction.
