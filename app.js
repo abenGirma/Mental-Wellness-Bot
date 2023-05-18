@@ -1,14 +1,19 @@
-const { Telegraf, Scenes, session } = require("telegraf");
-const { HttpsProxyAgent } = require("https-proxy-agent"); //dev dependancy
+const express = require("express");
+const { Telegraf } = require("telegraf");
 const LocalSession = require("telegraf-session-local");
 const { ServiceProvider } = require("./routes/ServiceProvider");
 const { Admin } = require("./routes/Admin");
 const { Student } = require("./routes/Student");
-const { home, login, signup, aboutUs } = require("./routes/General");
-const express = require("express");
-const { log } = require("console");
-const { request } = require("http");
-require("dotenv").config();
+const {
+	home,
+	login,
+	signup,
+	aboutUs,
+	generalError,
+} = require("./routes/General");
+
+require("dotenv").config(); //dev dependancy
+const { HttpsProxyAgent } = require("https-proxy-agent"); //dev dependancy
 
 const app = express();
 
@@ -30,7 +35,7 @@ const bot = new Telegraf(botToken, {
 	},
 });
 
-bot.use(new LocalSession({ database: "sessions.json" }).middleware());
+bot.use(new LocalSession().middleware());
 bot.start(home);
 
 bot.action("home", home);
@@ -39,6 +44,10 @@ bot.action("signup", signup);
 bot.action("about_us", aboutUs);
 
 const serviceProvider = new ServiceProvider();
+bot.action("sp_logout", serviceProvider.logout);
+bot.action("y_sp_logout", serviceProvider.yesLogout);
+bot.action("n_sp_logout", serviceProvider.noLogout);
+
 const admin = new Admin();
 const student = new Student();
 
@@ -56,7 +65,7 @@ bot.on("message", async function (ctx) {
 				const data = JSON.parse(ctx.message.web_app_data.data);
 				if (data.type) {
 					switch (data.type) {
-						case 2343:
+						case 2343: //request type
 							serviceProvider.login(ctx, data);
 							break;
 						case 2212:
@@ -65,7 +74,8 @@ bot.on("message", async function (ctx) {
 					}
 				}
 			} catch (error) {
-				log(error);
+				generalError(ctx, "Invalid data, please try again.");
+				console.log(error);
 			}
 		}
 		if (ctx.message.web_app_data.button_text.indexOf("Student") != -1) {
@@ -73,7 +83,7 @@ bot.on("message", async function (ctx) {
 				const data = JSON.parse(ctx.message.web_app_data.data);
 				if (data.type) {
 					switch (data.type) {
-						case 2343:
+						case 2343: //request type
 							student.login(ctx);
 							break;
 						case 2212:
@@ -82,39 +92,36 @@ bot.on("message", async function (ctx) {
 					}
 				}
 			} catch (error) {
-				log(error);
+				generalError(ctx, "Invalid data, please try again.");
+				console.log(error);
 			}
 		}
 
 		if (
 			ctx.message.web_app_data.button_text.indexOf("Verify token") != -1
 		) {
+			ctx.session.logging_in = true;
 			try {
 				const data = JSON.parse(ctx.message.web_app_data.data);
 				if (data.type) {
 					switch (data.type) {
-						case 7564:
+						case 7564: //role type
 							serviceProvider.verify(ctx, data);
 							break;
-						case 2212:
+						case 1721:
 							student.verify(ctx, data);
+							break;
+						case 4388:
+							admin.verify(ctx, data);
 							break;
 					}
 				}
 			} catch (error) {
-				log(error);
+				generalError(ctx, "Invalid data, please try again.");
+				console.log(error);
 			}
 		}
 	}
-
-	if (ctx.message.text && ctx.message.text == "« back home") {
-		home(ctx);
-	}
 });
-
-/**
- * TODO : More callbacks here, from ServiceProvider
- * and others too
- */
 
 bot.launch();
