@@ -61,7 +61,7 @@ const login = function (ctx) {
 			{
 				text: "🧑‍⚕️ Service Provider 👨‍⚕️",
 				web_app: {
-					url: "https://f55f-213-55-90-5.ngrok-free.app/projects/web-app/login.html",
+					url: "https://f55f-213-55-90-5.ngrok-free.app/projects/web-app/sp_login.html",
 				},
 			},
 		],

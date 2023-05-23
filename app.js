@@ -1,6 +1,7 @@
+const path = require("path")
 const express = require("express");
 const { Telegraf } = require("telegraf");
-const LocalSession = require("telegraf-session-local");
+// const LocalSession = require("telegraf-session-local");
 const { ServiceProvider } = require("./routes/ServiceProvider");
 const { Admin } = require("./routes/Admin");
 const { Student } = require("./routes/Student");
@@ -11,6 +12,8 @@ const {
 	aboutUs,
 	generalError,
 } = require("./routes/General");
+const {isEmail, isName} = require("./util/Validator")
+const axios = require("axios");
 
 require("dotenv").config(); //dev dependancy
 const { HttpsProxyAgent } = require("https-proxy-agent"); //dev dependancy
@@ -18,6 +21,7 @@ const { HttpsProxyAgent } = require("https-proxy-agent"); //dev dependancy
 const app = express();
 
 app.use(express.json());
+app.use(express.static(path.join(__dirname, "./public")));
 
 app.get("/", (req, res) => {
 	console.log("requst coming in");
@@ -27,7 +31,7 @@ app.get("/", (req, res) => {
 app.listen(3000, "localhost", () => {
 	console.log("Server listening on port 3000");
 });
-
+/*
 const botToken = process.env.BOT_TOKEN || "";
 const bot = new Telegraf(botToken, {
 	telegram: {
@@ -123,5 +127,92 @@ bot.on("message", async function (ctx) {
 		}
 	}
 });
+*/
+app.post('/sp_login', (req, res) => {
+	const {email} = req.body;
+	if (!isEmail(email))
+	{
+		res.status(401).json({
+			status : "error",
+			result : {
+				msg : "Invalid email."
+			}
+		})
+		return
+	}
 
-bot.launch();
+	axios.post(process.env.API + "/service-provider/login", { email })
+	.then((response) => {
+		if (response.data.status && response.data.status == "success") {
+			res.status(200).json({
+				status : response.data.status,
+				result : {
+					msg : response.data.result.msg,
+					route : "/sp_verify.html"
+				}
+			})
+		}
+	})
+	.catch((error) => {
+		if (
+			error.data && 
+			error.data.status && 
+			error.data.status == "unauthorized"
+		)
+		{
+			res.status(401).json({
+				status : error.data.status,
+				result : {
+					msg : error.data.result.msg,
+				}
+			})
+		}
+	});
+})
+
+app.post('/sp_signup', (req, res) => {
+	const {email} = req.body;
+	if (
+		!isName() ||
+		!isEmail(email)
+	)
+	{
+		res.status(401).json({
+			status : "error",
+			result : {
+				msg : "Invalid email."
+			}
+		})
+		return
+	}
+
+	axios.post(process.env.API + "/service-provider/login", { email })
+	.then((response) => {
+		if (response.data.status && response.data.status == "success") {
+			res.status(200).json({
+				status : response.data.status,
+				result : {
+					msg : response.data.result.msg,
+					route : "/sp_verify.html"
+				}
+			})
+		}
+	})
+	.catch((error) => {
+		if (
+			error.data && 
+			error.data.status && 
+			error.data.status == "unauthorized"
+		)
+		{
+			res.status(401).json({
+				status : error.data.status,
+				result : {
+					msg : error.data.result.msg,
+				}
+			})
+		}
+	});
+})
+
+// bot.launch();
