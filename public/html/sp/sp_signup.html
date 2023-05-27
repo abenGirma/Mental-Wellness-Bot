@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -13,9 +14,10 @@
         Telegram.WebApp.onEvent("themeChanged", setTheme)
         setTheme()
     </script>
-    <link rel="stylesheet" href="./css/style.css">
+    <link rel="stylesheet" href="../../css/style.css">
     <title>Web-App</title>
 </head>
+
 <body>
     <div class="container">
         <h2>Sign up</h2>
@@ -28,9 +30,14 @@
         <!-- <button id="phone-no-btn">Phone number</button> -->
         <input list="educational_bkg" name="educational_bkg" id="educational-bkg" placeholder="Educational background">
         <datalist id="educational_bkg">
-            <option value="Psichology">
-            <option value="Psichiatry">
+            <option value="Psychology">
+            <option value="Psychiatry">
+            <option value="BereketeAbb">
         </datalist>
+        <select name="health_team" id="health-team">
+            <option value="mental">Medical</option>
+            <option value="medical">Medical</option>
+        </select>
         <input type="text" name="work_exp" id="work-exp" placeholder="Work experience">
         <input type="text" name="office_location" id="office-location" placeholder="Office building and number">
         <fieldset>
@@ -46,8 +53,9 @@
         </fieldset>
         <button id="signup-btn">Sign up</button>
     </div>
-   
-    <script src="./js/script.js"></script>
-    <script src="./js/sp_verify.js"></script>
+
+    <script src="../../js/script.js"></script>
+    <script src="../../js/sp/sp_signup.js"></script>
 </body>
+
 </html>

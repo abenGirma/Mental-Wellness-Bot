@@ -7,7 +7,7 @@ loginBtn.addEventListener("click", (event) => {
 	caption.innerText = "Enter your email to login.";
 
 	if (webApp.isValidEmail(email)){
-		fetch("/sp_login", {
+		fetch("/stud_login", {
 			method: "post",
 			headers : {
 				"Content-Type" : "application/json"
@@ -17,14 +17,22 @@ loginBtn.addEventListener("click", (event) => {
 			})
 		}).then((res) => {
 			res.json().then((data)=>{
-				if (data.result && data.result.route)
-					window.location.href = data.result.route
+				if (data.result){
+					if (data.result.status)
+						window.location.href = data.result.route
+					if (data.result.msg){
+						caption.classList.add("warning");
+						caption.innerText = data.result.msg;
+					}
+				}
 			}).catch((err)=>{
+				
 				console.log(err);
+				
 			})
 		}).catch((err) => {
-			caption.classList.remove("warning");
-			caption.innerText = "Error, could not send data to backend.";
+			caption.classList.add("warning");
+			caption.innerText = "Fetch Error, could not send data to backend.";
 		})
 	}
 	else {

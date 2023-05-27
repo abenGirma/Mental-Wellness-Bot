@@ -21,11 +21,11 @@ const menu_disc = {
 };
 
 const home = function (ctx) {
-	try {
-		ctx.deleteMessage();
-	} catch (error) {
-		console.log(error);
-	}
+	// try {
+	// 	ctx.deleteMessage();
+	// } catch (error) {
+	// 	console.log(error);
+	// }
 
 	ctx.replyWithMarkdownV2(menu_disc.home, {
 		parse_mode: "MarkdownV2",
@@ -53,7 +53,7 @@ const login = function (ctx) {
 			{
 				text: "👨‍🎓 Student 🧑‍🎓",
 				web_app: {
-					url: "https://f55f-213-55-90-5.ngrok-free.app/projects/web-app/",
+					url: "https://38b8-196-191-53-155.ngrok-free.app/",
 				},
 			},
 		],
@@ -61,7 +61,7 @@ const login = function (ctx) {
 			{
 				text: "🧑‍⚕️ Service Provider 👨‍⚕️",
 				web_app: {
-					url: "https://f55f-213-55-90-5.ngrok-free.app/projects/web-app/sp_login.html",
+					url: "https://38b8-196-191-53-155.ngrok-free.app/sp_login.html",
 				},
 			},
 		],
@@ -69,7 +69,7 @@ const login = function (ctx) {
 			{
 				text: "💰 I want to donate",
 				web_app: {
-					url: "https://f55f-213-55-90-5.ngrok-free.app/projects/web-app/",
+					url: "https://38b8-196-191-53-155.ngrok-free.app/",
 				},
 			},
 		],

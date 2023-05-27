@@ -1,5 +1,7 @@
 "use strict";
 
+const $ = document;
+
 const WebApp = function () {
 	Telegram.WebApp.ready();
 	this.initData = Telegram.WebApp.initData || "";
@@ -33,9 +35,20 @@ WebApp.prototype.isName = function (name){
 	return isValid && /^[a-zA-Z]+$/.test(name)
 }
 
-WebApp.prototype.tashID = function (id){
+WebApp.prototype.isTashID = function (id){
 	let isValid = (id && id.length && id.length < 4);
 	return isValid
+}
+
+WebApp.prototype.isPhoneNo = function(phoneNo){
+	return true
+}
+WebApp.prototype.isTASHStudId = function(studId){
+	return true
+}
+
+WebApp.prototype.close = function(){
+	Telegram.WebApp.close()
 }
 
 const webApp = new WebApp();

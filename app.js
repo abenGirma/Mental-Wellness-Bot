@@ -39,7 +39,7 @@ const bot = new Telegraf(botToken, {
 	},
 });
 
-bot.use(new LocalSession().middleware());
+// bot.use(new LocalSession().middleware());
 bot.start(home);
 
 bot.action("home", home);
@@ -128,59 +128,60 @@ bot.on("message", async function (ctx) {
 	}
 });
 */
-app.post('/sp_login', (req, res) => {
-	const {email} = req.body;
-	if (!isEmail(email))
-	{
-		res.status(401).json({
-			status : "error",
-			result : {
-				msg : "Invalid email."
-			}
-		})
-		return
-	}
 
-	axios.post(process.env.API + "/service-provider/login", { email })
-	.then((response) => {
-		if (response.data.status && response.data.status == "success") {
-			res.status(200).json({
-				status : response.data.status,
-				result : {
-					msg : response.data.result.msg,
-					route : "/sp_verify.html"
-				}
-			})
-		}
-	})
-	.catch((error) => {
-		if (
-			error.data && 
-			error.data.status && 
-			error.data.status == "unauthorized"
-		)
-		{
-			res.status(401).json({
-				status : error.data.status,
-				result : {
-					msg : error.data.result.msg,
-				}
-			})
-		}
-	});
-})
 
+
+
+// EXPRESS CODE
+// Don't stress much, Tr.Dave!! ;)
+  
 app.post('/sp_signup', (req, res) => {
-	const {email} = req.body;
-	if (
-		!isName() ||
-		!isEmail(email)
-	)
-	{
+		const {provider_id, f_name, l_name, email, phone_no,		//Telegram ID
+			educational_bkg, work_exp, health_team,
+			office_location, available_at} = req.body;
+
+
+	axios.post(process.env.API + "/service-provider/signup", { 
+		provider_id, f_name, l_name, email, phone_no,		//Telegram ID
+		educational_bkg, work_exp, health_team,
+		office_location, available_at
+	 })
+	.then((response) => {
+		if (response.data.status && response.data.status == "success") {
+			res.status(200).json({
+				status : response.data.status,
+				result : {
+					msg : response.data.result.msg,
+					route : "./html/sp/sp_verify.html"
+				}
+			})
+		} else if (response.data.status && response.data.status == "error" ){				// If the error from the backend is 'error' {whether it is from the res. or from the catch}
+				res.status(500).json({
+					status: "error",
+					result: {
+						msg: response.data.result.msg
+					}
+				})
+		}
+	}).catch((err) => {
 		res.status(401).json({
-			status : "error",
-			result : {
-				msg : "Invalid email."
+			status: "error",
+			result: {
+				msg: "Can not send data to backend"
+			}
+		})
+	})
+
+})
+
+app.post('/sp_login', (req, res) => {
+	const { email } = req.body
+
+	if(!isEmail(email)){
+		res.status(401).json({
+			status: "error",
+			result: {
+				msg: "Invalid Email!"
 			}
 		})
 		return
@@ -188,31 +189,294 @@ app.post('/sp_signup', (req, res) => {
 
 	axios.post(process.env.API + "/service-provider/login", { email })
 	.then((response) => {
-		if (response.data.status && response.data.status == "success") {
+		if( response.data.status && response.data.status == "success"){
 			res.status(200).json({
-				status : response.data.status,
-				result : {
-					msg : response.data.result.msg,
-					route : "/sp_verify.html"
+				status: response.data.status,
+				result: {
+					msg: response.data.result.msg,		// You should have received a token via email
+					route: "./html/stud/stud_verify.html"
+				}
+			})
+		}
+
+		else if( response.data.status && response.data.status == "error"){
+			res.status(500).json({
+				status: "error",
+				result: {
+					msg: response.data.result.msg		//msg: Couldn't send an email
+				}
+			})
+		}
+
+		else if (response.data.status && response.data.status == "unauthorized"){
+			res.status(401).json({
+				status: "error",
+				result: {
+					msg : response.data.result.msg
 				}
 			})
 		}
 	})
 	.catch((error) => {
-		if (
-			error.data && 
-			error.data.status && 
-			error.data.status == "unauthorized"
-		)
-		{
-			res.status(401).json({
-				status : error.data.status,
-				result : {
-					msg : error.data.result.msg,
+		res.status(500).json({
+			status : "error",
+			result : {
+				msg : "Syncronization faild, please try again later.",
+			}
+		})
+	})
+})
+
+app.post('/sp_verify', (req, res) => {
+	const { token } = req.body;
+
+	if(!token){
+		res.status(401).json({
+			status: "error",
+			result: {
+				msg: "No token found"
+			}
+		})
+		return;
+	}
+
+	axios.post(process.env.API +"/service-provider/verify", {token})
+	.then((response) => {
+		if(response.data.status && response.data.status == "success"){
+			// bot.use((ctx, next)=>{
+			// 	ctx.session.token = response.data.result.token;
+			// 	next()
+			// })
+			// TO BE futher tested.
+			res.status(200).json({
+				status: "success",
+				result: {
+					msg: response.data.result.msg
+				}
+			})
+		} else {
+			res.status(500).json({
+				status: "error",
+				result: {
+					msg: response.data.result.msg
 				}
 			})
 		}
-	});
+}).catch((error) => {
+	res.status(500).json({
+		status: "success",
+		result: {
+			msg: "Axios Error, Cannot send data to the backend"
+		}
+	})
 })
+
+
+	
+})
+
+
+
+
+app.post('/stud_signup', (req, res) => {
+	const {stud_id, f_name, l_name, email, phone_no, ed_info} = req.body
+
+	axios.post(process.env.API + "/user/signup", 
+		{stud_id, f_name, l_name, email, phone_no, ed_info})
+		.then((response) => {
+			if (response.data.status && response.data.status == "success"){
+				res.status(200).json({
+					status: "success",
+					result: {
+						msg: response.data.result.msg,
+						route: './html/sp/sp_verify.html'
+					}
+				})
+			} else {
+				res.status().json({
+					status: "error",
+					result: {
+						msg: response.data.result.msg
+					}
+				})
+			}
+		}).catch((error) => {
+			res.status(500).json({
+				status: "error",
+				result: {
+					msg: "Axios Error, Couldn't send data to the backend"
+				}
+			})
+		}) 
+})
+
+app.post('/stud_login', (req, res) => {
+	const {email} = req.body;
+
+	axios.post(process.env.API+"/user/login", {email})
+		.then((response) => {
+			if(response.data.status && response.data.status == "success"){
+				res.status(200).json({
+					status: "success",
+					result: {
+						msg: response.data.result.msg,
+						route: './html/sp/sp_verify.html'
+					}
+				})
+			} else {
+				res.status(500).json({
+					status: "error",
+					result: {
+						msg: response.data.result.msg
+					}
+				})
+			}
+		}).catch((error)=> {
+			res.status(401).json({
+				status: "error",
+				msg: "Axios Error, Can not send data to the backend"
+			})
+		})
+})
+
+app.post('/stud_verify', (req, res) => {
+	const {token} = req.body;
+
+	axios.post(process.env.API +"/user/verify", {token})
+		.then((response) => {
+			if(response.data.status && response.data.status == "success"){
+				// bot.use((ctx, next)=>{
+				// 	ctx.session.token = response.data.result.token;
+				// 	next()
+				// })
+				// TO BE futher tested.
+				res.status(200).json({
+					status: "success",
+					result: {
+						msg: response.data.result.msg
+					}
+				})
+			} else {
+				res.status(500).json({
+					status: "error",
+					result: {
+						msg: response.data.result.msg
+					}
+				})
+			}
+	}).catch((error) => {
+		res.status(500).json({
+			status: "success",
+			result: {
+				msg: "Axios Error, Cannot send data to the backend"
+			}
+		})
+	})
+})
+
+
+
+
+app.post('/admin_signup', (req, res) => {
+	const { f_name, l_name, email, speciality,
+			working_hour, communication, phone_no } = req.body;
+
+		axios.post(process.env.API+"/admin/signup", {
+			f_name, l_name, email, speciality,
+			working_hour, communication, phone_no
+		}).then((response) => {
+			if(response.data.status && response.data.status == "success"){
+				res.status(200).json({
+					status: "success",
+					result: {
+						msg: response.data.result.msg,
+						route: './html/admin/admin_verify.html'
+					}
+				})
+			} else {
+				res.status(200).json({
+					status: "error",
+					result: {
+						msg: response.data.result.msg
+					}
+				})
+			}
+		}).catch((error) => {
+			res.status(500).json({
+				status: "error",
+				result: {
+					msg: "Axios Error, Can not fetch data to backend"
+				}
+			})
+		})
+	
+})
+
+app.post('/admin_login', (req, res) => {
+	const { email } = req.body;
+
+	axios.post(process.env.API + "/admin/login", {
+		email
+	})
+		.then((response) => {
+			if(response.data.status && response.data.status == "success"){
+				res.status(200).json({
+					status: "success",
+					result: {
+						msg: response.data.result.msg,
+						route: './html/admin/admin_verify.html'
+					}
+				})
+			} else {
+				res.status(500).json({
+					status: "error",
+					result: {
+						msg: response.data.result.msg
+					}
+				})
+			}
+		}).catch((error)=> {
+			res.status(401).json({
+				status: "error",
+				msg: "Axios Error, Can not send data to the backend"
+			})
+		})
+})
+
+app.post('/admin_verify', (req, res) => {
+	const { token } = req.body;
+
+	axios.post(process.env.API + "/admin/verify", { token })
+		.then((response) => {
+			if (response.data.status && response.data.status == "success"){
+				// bot.use((ctx, next)=>{
+				// 	ctx.session.token = response.data.result.token;
+				// 	next()
+				// })
+				// TO BE futher tested.
+				res.status(200).json({
+					status: "success",
+					result: {
+						msg: response.data.result.msg
+					}
+				})
+			} else {
+				res.status(500).json({
+					status: "error",
+					result: {
+						msg: response.data.result.msg
+					}
+				})
+			}
+	}).catch((error) => {
+		res.status(500).json({
+			status: "success",
+			result: {
+				msg: "Axios Error, Cannot send data to the backend"
+			}
+		})
+	})
+})
+
 
 // bot.launch();

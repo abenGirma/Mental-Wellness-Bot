@@ -13,18 +13,18 @@
         Telegram.WebApp.onEvent("themeChanged", setTheme)
         setTheme()
     </script>
-    <link rel="stylesheet" href="./css/style.css">
+    <link rel="stylesheet" href="../../css/style.css">
     <title>Web-App</title>
 </head>
 <body>
     <div class="container">
-        <h2>Verify</h2>
-        <p id="caption" class="caption">Enter your verification token down here.</p>
-        <input type="text" name="token" id="token" placeholder="eyJhbGciOiJIUzI1NiIsIn">
-        <button id="verify-btn">Verify</button>
+        <h2>Login</h2>
+        <p id="caption" class="caption">Enter your email to login.</p>
+        <input type="email" name="email" id="email" placeholder="example@tash.com">
+        <button id="login-btn">Login</button>
     </div>
    
-    <script src="./js/script.js"></script>
-    <script src="./js/sp_verify.js"></script>
+    <script src="../../js/script.js"></script>
+    <script src="../../js/admin/admin_login.js"></script>
 </body>
 </html>

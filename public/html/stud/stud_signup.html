@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://telegram.org/js/telegram-web-app.js?1"></script>
+    <script>
+        function setTheme() {
+            document.documentElement.className = Telegram.WebApp.colorScheme;
+        }
+
+        Telegram.WebApp.onEvent("themeChanged", setTheme)
+        setTheme()
+    </script>
+    <link rel="stylesheet" href="../../css/style.css">
+    <title>Web-App</title>
+</head>
+
+<body>
+    <div class="container">
+        <h2>Sign up</h2>
+        <p id="caption" class="caption">Complete our form accordingly.</p>
+        <input type="text" name="stud_id" id="id" placeholder="TASH ID">
+        <input type="text" name="f_name" id="f-name" placeholder="Your Name">
+        <input type="text" name="l_name" id="l-name" placeholder="Father Name">
+        <input type="email" name="email" id="email" placeholder="Email">
+        <input type="tel" name="phone_no" id="phone-no" placeholder="Mobile">
+        
+        <fieldset>
+            <legend>Educational Information</legend>
+
+            <label for="batch">
+                Batch
+                <select name="batch" id="batch" class="input">
+                    <option value="pc1">PC1</option>
+                    <option value="pc2">PC2</option>
+                    <option value="c1">C1</option>
+                    <option value="c2">C2</option>
+                    <option value="intern">Intern</option>
+                </select>
+            </label>
+ 
+            <label for="dept">
+                Department
+                <select name="dept" id="dept" class="input">
+                    <option value="medicine">Medicine</option>
+                    <option value="dental">Dental</option>
+                    <option value="pharmacy">Pharmacy</option>
+                    <option value="midwife">Midwife</option>
+                    <option value="laboratory">Laboratory</option>
+                </select>
+            </label>
+ 
+        </fieldset>
+
+        <button id="signup-btn">Sign up</button>
+    </div>
+
+    <script src="../../js/script.js"></script>
+    <script src="../../js/sp/stud_signup.js"></script>
+</body>
+
+</html>
