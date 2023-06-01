@@ -47,13 +47,15 @@ const login = function (ctx) {
 	}
 
 	ctx.replyWithMarkdownV2(
-		menu_disc.login,
-		Markup.keyboard([
+		menu_disc.login,{
+		// Markup.keyboard(
+			reply_markup : { 
+				inline_keyboard :[
 		[
 			{
 				text: "👨‍🎓 Student 🧑‍🎓",
 				web_app: {
-					url: "https://38b8-196-191-53-155.ngrok-free.app/",
+					url: "https://734a-213-55-90-5.ngrok-free.app/",
 				},
 			},
 		],
@@ -61,7 +63,7 @@ const login = function (ctx) {
 			{
 				text: "🧑‍⚕️ Service Provider 👨‍⚕️",
 				web_app: {
-					url: "https://38b8-196-191-53-155.ngrok-free.app/sp_login.html",
+					url: "https://734a-213-55-90-5.ngrok-free.app/html/sp/sp_login.html",
 				},
 			},
 		],
@@ -69,14 +71,14 @@ const login = function (ctx) {
 			{
 				text: "💰 I want to donate",
 				web_app: {
-					url: "https://38b8-196-191-53-155.ngrok-free.app/",
+					url: "https://734a-213-55-90-5.ngrok-free.app/",
 				},
 			},
 		],
 		[{ text: "« back home", callback_data:"home" }],
-	])
-		.resize()
-		.oneTime()
+	]}}//)
+		// .resize()
+		// .oneTime()
 	);
 };
 

@@ -4,9 +4,16 @@ const $ = document;
 
 const WebApp = function () {
 	Telegram.WebApp.ready();
-	this.initData = Telegram.WebApp.initData || "";
-	this.initDataUnsafe = Telegram.WebApp.initDataUnsafe || "";
+	// this.initData = Telegram.WebApp.initData || "";
+	// this.initDataUnsafe = Telegram.WebApp.initDataUnsafe || {};
+	Telegram.WebApp.MainButton.setParams({
+		text: 'CLOSE',
+		is_visible: true
+	}).onClick(this.close);
 };
+
+WebApp.prototype.initData = Telegram.WebApp.initData || "";
+WebApp.prototype.initDataUnsafe = Telegram.WebApp.initDataUnsafe || {};
 
 WebApp.prototype.initTheme = function () {
 	document.documentElement.className = Telegram.WebApp.colorScheme;
@@ -49,6 +56,10 @@ WebApp.prototype.isTASHStudId = function(studId){
 
 WebApp.prototype.close = function(){
 	Telegram.WebApp.close()
+}
+
+WebApp.prototype.alertMe = function(alert) {
+	Telegram.WebApp.showAlert(JSON.stringify(alert))
 }
 
 const webApp = new WebApp();
