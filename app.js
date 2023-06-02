@@ -1,7 +1,10 @@
-const path = require("path")
 const express = require("express");
-const { Telegraf, session } = require("telegraf");
-// const LocalSession = require("telegraf-session-local");
+const axios = require("axios");
+const path = require("path")
+const { writeFileSync } = require("fs")
+const { Telegraf } = require("telegraf");
+const { MongoClient } = require('mongodb'); //something like mongoose
+const { session } = require('telegraf-session-mongodb'); //session control test
 const { ServiceProvider } = require("./routes/ServiceProvider");
 const { Admin } = require("./routes/Admin");
 const { Student } = require("./routes/Student");
@@ -12,11 +15,18 @@ const {
 	aboutUs,
 	generalError,
 } = require("./routes/General");
-const {isEmail, isName} = require("./util/Validator")
-const axios = require("axios");
+const {
+	isEmail, 
+	isName, 
+	isValidInitData
+} = require("./util/Validator")
 
-require("dotenv").config(); //dev dependancy
-const { HttpsProxyAgent } = require("https-proxy-agent"); //dev dependancy
+/* --- DEV DEPENDANCIES --- */
+
+require("dotenv").config(); 
+const { HttpsProxyAgent } = require("https-proxy-agent"); 
+
+/* --- --------------- --- */
 
 const app = express();
 
@@ -39,13 +49,17 @@ const bot = new Telegraf(botToken, {
 	},
 });
 
-// bot.use(new LocalSession().middleware());
-bot.use(session());
+MongoClient.connect(process.env.MONGO_CONN , { useNewUrlParser: true, useUnifiedTopology: true })
+.then(client => {
+	const db = client.db();
+	console.log("Database connected, successfully!")
+bot.use(session(db, { collectionName: 'sessions' }));
+
+// bot.use(session());
 bot.hears("session", (ctx)=>{
 	ctx.sendMessage(ctx.session.token || "No session bruh")
 })
-// EXPRESS CODE
-// Don't stress much, Tr.Dave!! ;)
+
 
 /**
  * SERVICE PROVIDER AUTH
@@ -54,8 +68,18 @@ bot.hears("session", (ctx)=>{
 app.post('/sp_signup', (req, res) => {
 	const {provider_id, f_name, l_name, email, phone_no,		//Telegram ID
 		educational_bkg, work_exp, health_team,
-		office_location, available_at} = req.body;
+		office_location, available_at, initData} = req.body;
 
+	if (!isValidInitData(initData))
+	{
+		res.status(401).json({
+			status: "error",
+			result: {
+				msg: "Not a valid request."
+			}
+		})
+		return;
+	}
 
 axios.post(process.env.API + "/service-provider/signup", { 
 	provider_id, f_name, l_name, email, phone_no,		//Telegram ID
@@ -91,13 +115,13 @@ axios.post(process.env.API + "/service-provider/signup", {
 })
 
 app.post('/sp_login', (req, res) => {
-const { email } = req.body
+const { email, initData } = req.body
 
-if(!isEmail(email)){
+if(!isEmail(email) || !isValidInitData(initData)){
 	res.status(401).json({
 		status: "error",
 		result: {
-			msg: "Invalid Email!"
+			msg: "Invalid request!"
 		}
 	})
 	return
@@ -145,41 +169,67 @@ axios.post(process.env.API + "/service-provider/login", { email })
 })
 
 app.post('/sp_verify', (req, res) => {
-const { token } = req.body;
-console.log(token);
-if(!token){
+const { token, initData} = req.body;
+
+if(!token || !isValidInitData(initData)){
 	res.status(401).json({
 		status: "error",
 		result: {
-			msg: "No token found"
+			msg: "Not a valid request."
 		}
 	})
 	return;
 }
 
+const decodedUrlParams = new URLSearchParams(initData);
+const userId = JSON.parse(decodedUrlParams.get("user")).id;
+
 axios.post(process.env.API +"/service-provider/verify", {token})
 .then((response) => {
 	if(response.data.status && response.data.status == "success"){
-		bot.use((ctx, next)=>{
-			try {
-				ctx.session.token = response.data.result.token;
-				// TO BE futher tested.
-				res.status(200).json({
-					status: "success",
-					result: {
-						msg: response.data.result.msg
-					}
-				})
-				next()
-			}catch(error){
-				res.status(500).json({
-					status: "error",
-					result: {
-						msg: "Error on our part, we couldn't set session for you."
-					}
-				})
+		let collection = db.collection("sessions");
+		
+		collection.replaceOne(
+			{ key: `${userId}:${userId}` },
+			{ key: `${userId}:${userId}`, data: {
+				token : `${response.data.result.token}`
+			}},
+			{ upsert: true }
+		)
+		res.status(200).json({
+			status: "success",
+			result: {
+				msg: response.data.result.msg
 			}
 		})
+		
+		bot.telegram.sendMessage(userId, 
+			"Welcome Home, You have logged in successfully! \n You would be able to do your Service Provider Operation From here!",
+			{
+				reply_markup : { 
+					inline_keyboard :[
+						[
+							{
+								text: "📆 Appointments",
+								callback_data : "sp_appointments"
+							},
+						],
+						[
+							{
+								text: "📆 Set appointments",
+								callback_data : "sp_set_appointments"
+							},
+						],
+						[
+							{
+								text: "Logout",
+								callback_data : "sp_logout"
+							},
+						],
+					]
+				}
+			}
+		)
 	} else {
 		console.log(response.data);
 		res.status(500).json({
@@ -190,7 +240,7 @@ axios.post(process.env.API +"/service-provider/verify", {token})
 		})
 	}
 }).catch((error) => {
-console.log(error.response.data);
+console.log(error);
 res.status(500).json({
 	status: "success",
 	result: {
@@ -416,6 +466,7 @@ const serviceProvider = new ServiceProvider();
 bot.action("sp_logout", serviceProvider.logout);
 bot.action("y_sp_logout", serviceProvider.yesLogout);
 bot.action("n_sp_logout", serviceProvider.noLogout);
+bot.action("sp_appointments", serviceProvider.getAppointments);
 
 const admin = new Admin();
 const student = new Student();
@@ -493,5 +544,5 @@ bot.on("message", async function (ctx) {
 	}
 });
 */
-
+})
 bot.launch();

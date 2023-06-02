@@ -157,9 +157,25 @@ ServiceProvider.prototype.setAppointment = function () {
 
 ServiceProvider.prototype.getAppointments = function (ctx) {
 	//TODO: Get appointment from backend
+	try{
+		ctx.deleteMessage()
+	}catch(err)
+	{
+
+	}
+
+	ctx.reply("Hello There, the test is working");
 };
 
 ServiceProvider.prototype.getPatientRequests = function (ctx) {
+	try{
+		ctx.deleteMessage()
+	}catch(err)
+	{
+
+	}
+
+	ctx.reply("Hello There, the test is working");
 	if (
 		!ctx.session ||
 		!ctx.session.token ||

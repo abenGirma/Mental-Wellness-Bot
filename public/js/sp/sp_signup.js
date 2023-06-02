@@ -18,16 +18,12 @@ signupBtn.addEventListener("click", (event) => {
 	let startAt = document.getElementById("start-at").value;
 	let endAt = document.getElementById("end-at").value;
 
-
-	
-
 	if (verify(providerId, fName, lName, email, phoneNo)){
 
 		fetch('/stud_signup', {
 			method: "post",
 			headers: {
-				"Content-Type" : "application/json",
-				"Accept" : "application/json"
+				"Content-Type" : "application/json"
 			},
 			body: JSON.stringify({
 				provider_id : providerId,
@@ -42,8 +38,8 @@ signupBtn.addEventListener("click", (event) => {
 				available_at : {
 					start_at: startAt,
 					end_at: endAt
-				}
-				
+				},
+				initData : webApp.getInitData()
 			})
 		}).then((result) => {
 			if(result.status && result.status == "success"){

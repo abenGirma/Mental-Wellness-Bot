@@ -55,7 +55,7 @@ const login = function (ctx) {
 			{
 				text: "👨‍🎓 Student 🧑‍🎓",
 				web_app: {
-					url: "https://734a-213-55-90-5.ngrok-free.app/",
+					url: "https://3b6a-213-55-90-5.ngrok-free.app/",
 				},
 			},
 		],
@@ -63,7 +63,7 @@ const login = function (ctx) {
 			{
 				text: "🧑‍⚕️ Service Provider 👨‍⚕️",
 				web_app: {
-					url: "https://734a-213-55-90-5.ngrok-free.app/html/sp/sp_login.html",
+					url: "https://3b6a-213-55-90-5.ngrok-free.app/html/sp/sp_login.html",
 				},
 			},
 		],
@@ -71,7 +71,7 @@ const login = function (ctx) {
 			{
 				text: "💰 I want to donate",
 				web_app: {
-					url: "https://734a-213-55-90-5.ngrok-free.app/",
+					url: "https://3b6a-213-55-90-5.ngrok-free.app/",
 				},
 			},
 		],

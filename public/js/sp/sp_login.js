@@ -14,7 +14,8 @@ loginBtn.addEventListener("click", (event) => {
 				"Content-Type" : "application/json"
 			},
 			body : JSON.stringify({
-				email
+				email,
+				initData : webApp.getInitData()
 			})
 		}).then((res) => {
 			res.json().then((data)=>{
@@ -22,14 +23,11 @@ loginBtn.addEventListener("click", (event) => {
 					if (data.result.route)
 						window.location.href = data.result.route
 					if (data.result.msg){
-						caption.classList.add("warning");
 						caption.innerText = data.result.msg;
 					}
 				}
 			}).catch((err)=>{
-				
 				console.log(err);
-				
 			})
 		}).catch((err) => {
 			caption.classList.add("warning");

@@ -58,7 +58,7 @@ WebApp.prototype.close = function(){
 	Telegram.WebApp.close()
 }
 
-WebApp.prototype.alertMe = function(alert) {
+WebApp.prototype.showAlert = function(alert) {
 	Telegram.WebApp.showAlert(JSON.stringify(alert))
 }
 
