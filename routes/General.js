@@ -8,14 +8,13 @@ const menu_disc = {
 		⚠️ __If it is not openning and you are on telegram proxy but not on VPN, connect your 
 		"VPN and try again\\.__`,
 	signup:
-		"📃 **Sign up** \n" +
-		"How would you like to proceed\? " +
-		"Click the following buttons to fill out your form\\. \n\n" +
-		"⚠️ __If it is not openning and you are on telegram proxy but not on VPN, connect your " +
-		"VPN and try again\\.__",
+		"📃 <b>Sign up</b> \n" +
+		"How would you like to proceed? \n" +
+		"Click the following buttons to fill out your form. \n" +
+		"⚠️ <em>If it is not openning and you are on telegram proxy but not on VPN, connect your " +
+		"VPN and try again. </em>",
 	home:
-		"🏠 **Home: **\n" ||
-		"Welcome to SAC Wellness bot\\.",
+		"🏠 <b>Home: </b>",
 	about_us: "We are SAC",
 	error: "",
 };
@@ -27,8 +26,8 @@ const home = function (ctx) {
 	// 	console.log(error);
 	// }
 
-	ctx.replyWithMarkdownV2(menu_disc.home, {
-		parse_mode: "MarkdownV2",
+	ctx.sendMessage(menu_disc.home, {
+		parse_mode: "HTML",
 		reply_markup: {
 			inline_keyboard: [
 				[{ text: "🗝 Login", callback_data: "login" }],
@@ -46,8 +45,9 @@ const login = function (ctx) {
 		console.log(error);
 	}
 
-	ctx.replyWithMarkdownV2(
+	ctx.sendMessage(
 		menu_disc.login,{
+			parse_mode: "HTML",
 		// Markup.keyboard(
 			reply_markup : { 
 				inline_keyboard :[
@@ -55,7 +55,7 @@ const login = function (ctx) {
 			{
 				text: "👨‍🎓 Student 🧑‍🎓",
 				web_app: {
-					url: "https://3b6a-213-55-90-5.ngrok-free.app/",
+					url: process.env.BASE_WEB_API,
 				},
 			},
 		],
@@ -63,7 +63,7 @@ const login = function (ctx) {
 			{
 				text: "🧑‍⚕️ Service Provider 👨‍⚕️",
 				web_app: {
-					url: "https://3b6a-213-55-90-5.ngrok-free.app/html/sp/sp_login.html",
+					url: process.env.BASE_WEB_API + "/html/sp/sp_login.html",
 				},
 			},
 		],
@@ -71,7 +71,7 @@ const login = function (ctx) {
 			{
 				text: "💰 I want to donate",
 				web_app: {
-					url: "https://3b6a-213-55-90-5.ngrok-free.app/",
+					url: process.env.BASE_WEB_API,
 				},
 			},
 		],
@@ -89,42 +89,46 @@ const signup = function (ctx) {
 		console.log(error);
 	}
 
-	ctx.replyWithMarkdownV2(menu_disc.signup, {
+	ctx.sendMessage(menu_disc.signup, {
+		parse_mode: "HTML",
 		reply_markup: {
-			inline_keyboard: [[{ text: "« back", callback_data: "home" }]],
+			inline_keyboard: [
+				[
+					{
+						text: "👨‍🎓 Student 🧑‍🎓",
+						web_app: {
+							url: process.env.BASE_WEB_API + "/html/stud/stud_signup.html",
+						},
+					},
+				],
+				[
+					{
+						text: "🧑‍⚕️ Service Provider 👨‍⚕️",
+						web_app: {
+							url: process.env.BASE_WEB_API + "/html/sp/sp_signup.html",
+						},
+					},
+				],
+				[
+					{
+						text: "💰 I want to donate",
+						web_app: {
+							url: process.env.BASE_WEB_API + "/html/sp/sp_login.html",
+						},
+					},
+				],
+				[{ text: "« back", callback_data: "home" }]
+			],
 		},
 	});
 
-	ctx.reply("",
-		Markup.keyboard([
-			[
-				{
-					text: "👨‍🎓 Student 🧑‍🎓",
-					web_app: {
-						url: "https://telegram-webapp.github.com/somerepo/student_signup.html",
-					},
-				},
-			],
-			[
-				{
-					text: "🧑‍⚕️ Service Provider 👨‍⚕️",
-					web_app: {
-						url: "https://telegram-webapp.github.com/somerepo/service_provider_signup.html",
-					},
-				},
-			],
-			[
-				{
-					text: "💰 I want to donate",
-					web_app: {
-						url: "https://telegram-webapp.github.com/somerepo/donors.html",
-					},
-				},
-			],
-		])
-			.oneTime()
-			.resize()
-	);
+	// ctx.reply("",
+	// 	Markup.keyboard([
+	// 		,
+	// 	])
+	// 		.oneTime()
+	// 		.resize()
+	// );
 };
 
 const aboutUs = function (ctx) {
@@ -135,6 +139,7 @@ const aboutUs = function (ctx) {
 	}
 
 	ctx.replyWithMarkdownV2(menu_disc.about_us, {
+		parse_mode: "HTML",
 		reply_markup: {
 			inline_keyboard: [
 				[
@@ -158,6 +163,7 @@ const generalError = function (ctx, error) {
 	}
 
 	ctx.replyWithMarkdownV2(error || menu_disc.error, {
+		parse_mode: "HTML",
 		reply_markup: {
 			inline_keyboard: [
 				[

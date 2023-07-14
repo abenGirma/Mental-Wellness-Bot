@@ -19,8 +19,8 @@ tokenBtn.addEventListener("click", (event) => {
 				initDataUnsafe : webApp.getInitDataUnsafe()
 			})
 		}).then((res) => {
-			caption.classList.add("warning")
-			caption.innerText = JSON.stringify(res);
+			// caption.classList.add("warning")
+			// caption.innerText = JSON.stringify(res);
 			res.json().then((data) => {
 				if (data.status && data.status == "success"){
 					webApp.showAlert(data.result.msg)

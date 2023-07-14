@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://telegram.org/js/telegram-web-app.js?1"></script>
+    <script>
+        function setTheme() {
+            document.documentElement.className = Telegram.WebApp.colorScheme;
+        }
+
+        Telegram.WebApp.onEvent("themeChanged", setTheme)
+        setTheme()
+    </script>
+    <link rel="stylesheet" href="../../css/style.css">
+    <title>Web-App</title>
+</head>
+
+<body>
+    <div class="container">
+        <h2>Sign up</h2>
+        <p id="caption" class="caption">Complete our form accordingly.</p>
+        <input type="text" name="provider_id" id="id" placeholder="TASH ID">
+        <input type="text" name="f_name" id="f-name" placeholder="Your Name">
+        <input type="text" name="l_name" id="l-name" placeholder="Father Name">
+        <input type="email" name="email" id="email" placeholder="Email">
+        <input type="tel" name="phone_no" id="phone-no" placeholder="Mobile">
+        <!-- <button id="phone-no-btn">Phone number</button> -->
+        <input list="educational_bkg" name="educational_bkg" id="educational-bkg" placeholder="Educational background">
+        <datalist id="educational_bkg">
+            <option value="Psychology">
+            <option value="Psychiatry">
+            <option value="BereketeAbb">
+        </datalist>
+        <select name="health_team" id="health-team">
+            <option value="mental">Medical</option>
+            <option value="medical">Medical</option>
+        </select>
+        <input type="text" name="work_exp" id="work-exp" placeholder="Work experience">
+        <input type="text" name="office_location" id="office-location" placeholder="Office building and number">
+        <fieldset>
+            <legend>Available working hours</legend>
+
+            <label for="start_at">Start at
+                <input type="time" name="start_at" id="start-at">
+            </label>
+
+            <label for="end_at">Finish at:
+                <input type="time" name="end_at" id="end-at">
+            </label>
+        </fieldset>
+        <button id="signup-btn">Sign up</button>
+    </div>
+
+    <script src="../../js/script.js"></script>
+    <script src="../../js/sp/sp_signup.js"></script>
+</body>
+
+</html>

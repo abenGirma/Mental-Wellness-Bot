@@ -1,0 +1,61 @@
+<!-- 
+    ADD THIS ON THE STYLE.CSS 
+  .container textarea {
+  padding: 4%;
+  border-radius: 2%;
+  border-color: #50a8eb;
+  margin: 0% 5%;
+}
+
+
+ -->
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://telegram.org/js/telegram-web-app.js?1"></script>
+    <script>
+        function setTheme() {
+            document.documentElement.className = Telegram.WebApp.colorScheme;
+        }
+
+        Telegram.WebApp.onEvent("themeChanged", setTheme)
+        setTheme()
+    </script>
+    <link rel="stylesheet" href="./../../css/style.css">
+    <title>Appoitement</title>
+</head>
+
+<body>
+    <div class="container">
+        <h2>Set Appointment</h2>
+
+        <p id="caption" class="caption">Service Provider, please fill this form accordingly. It is an approval setting
+            to be sent to the student.</p>
+
+        <!-- Autogen Student ID  -->
+        <input type="text" name="stud_id" id="id" placeholder="Student ID" required>
+        <!-- Didn't think of this but good idea-->
+        <input type="text" name="diagnosis" id="diagnosis" placeholder="Diagnosis Type" list="diagnosis_type">
+        <datalist id="diagnosis_type">
+            <option value="Mental">For Mental Health ... Some Description goes here</option>
+            <option value="Medical">For Medical Health problems... Mediacl Health problems are this this and the
+                like</option>
+            <option value="Physical">Physical Health related problems are .... and the like</option>
+        </datalist>
+        <!-- cols="40" rows="10" -->
+        <textarea id="remark" placeholder="Remark: Say something to the student."></textarea>
+
+        <input type="date" name="date" id="date" required>
+        <input type="time" name="time" id="time" required>
+        <input type="text" name="place" id="place" placeholder="Place of Appointment" required>
+
+        <button id="set-appointment">Set Appointment</button>
+    </div>
+</body>
+
+</html>

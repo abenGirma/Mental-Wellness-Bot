@@ -1,5 +1,3 @@
-const { webApp } = require("telegraf/typings/button");
-
 const signupBtn = document.getElementById("signup-btn");
 const caption = document.getElementById("caption");
 

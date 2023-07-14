@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://telegram.org/js/telegram-web-app.js?1"></script>
+    <script>
+        function setTheme() {
+            document.documentElement.className = Telegram.WebApp.colorScheme;
+        }
+
+        Telegram.WebApp.onEvent("themeChanged", setTheme)
+        setTheme() 
+    </script>
+    <link rel="stylesheet" href="./../../css/style.css">
+    <link rel="stylesheet" href="./../../css/appointment.css">
+    <title>Appoitement</title>
+</head>
+
+<body>
+    <h2>Appointments</h2>
+    <div class="container">
+        <ul>
+            <li>
+                Name : Samrawit Alebel
+            </li>
+            <li>
+                ID : Someone
+            </li>
+            <li>
+                Data : 12/3/2018
+            </li>
+            <li>
+                Time : 12:40 AM
+            </li>
+            <li>
+                Remark : jalksjdfkja
+            </li>
+        </ul>
+        <div class="action-btn-container">
+            <button onclick="editAppointment('idhere')">Edit</button>
+            <button class="btn-danger" onclick="deleteAppointment('idhere')">Delete</button>
+        </div>
+    </div>
+    <div class="container">
+        <ul>
+            <li>
+                Name : Samrawit Alebel
+            </li>
+            <li>
+                ID : Someone
+            </li>
+            <li>
+                Data : 12/3/2018
+            </li>
+            <li>
+                Time : 12:40 AM
+            </li>
+            <li>
+                Remark : jalksjdfkja
+            </li>
+        </ul>
+        <div class="action-btn-container">
+            <button onclick="editAppointment('idhere')">Edit</button>
+            <button class="btn-danger" onclick="deleteAppointment('idhere')">Delete</button>
+        </div>
+    </div>
+    <script src="../../js/script.js"></script>
+    <script src="../../js/sp/sp_check_appointment.js"></script>
+</body>
+
+</html>

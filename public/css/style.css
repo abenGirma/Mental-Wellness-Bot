@@ -10,10 +10,14 @@ body {
   font-family: "Open-sans", sans-serif;
   display: flex;
   justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  row-gap: 1rem;
   padding: 1rem;
 }
 
-.input, input {
+.input,
+input {
   width: 100%;
   border-radius: 4px;
   border: none;
@@ -49,7 +53,7 @@ button {
 .container {
   width: 100%;
   min-width: 250px;
-  max-width: 450px;
+  max-width: 460px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -64,12 +68,23 @@ button {
   text-align: center;
 }
 
+.container textarea {
+  padding: 4%;
+  border-radius: 2%;
+  border-color: #50a8eb;
+  margin: 0% 5%;
+}
+
 .caption {
   color: var(--tg-theme-hint-color, #ccc);
 }
 
 .warning {
   color: #ec4f4f;
+}
+
+.btn-danger {
+  background-color: #ec4f4f;
 }
 
 fieldset {
@@ -81,4 +96,9 @@ fieldset {
   flex-direction: column;
   row-gap: 1rem;
   color: var(--tg-theme-hint-color, #ccc);
+}
+
+ul {
+  list-style: none;
+  color: var(--tg-theme-text-color, #000);
 }/*# sourceMappingURL=style.css.map */

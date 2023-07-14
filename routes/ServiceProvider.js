@@ -2,20 +2,50 @@ const { Markup } = require("telegraf");
 const { isEmail } = require("validator");
 const axios = require("axios");
 const {home} = require("./General")
+const {MongoDb} = require("../database/Mongo")
 require("dotenv").config();
 
 const ServiceProvider = function (bot) {
 	this.bot = bot;
 };
 
-ServiceProvider.prototype.home = async function (ctx) {
+ServiceProvider.prototype.home = async function (userId) {
 	if (
-		ctx.session &&
-		ctx.session.token &&
-		ctx.session.role &&
-		ctx.session.role == process.env.SP_ROLE
-	)
-		ctx.reply("Welcome home! ", {
+		true
+	){
+		this.bot.telegram.sendMessage(userId, 
+			"Welcome Home, You have logged in successfully! \n You would be able to do your Service Provider Operation From here!",
+			{
+				reply_markup : { 
+					inline_keyboard :[
+						[
+							{
+								text: "📆 Check Appointments",
+								web_app : {
+									url : process.env.BASE_WEB_API + "/html/sp/check_appointment.html",
+								}
+							},
+						],
+						[
+							{
+								text: "📆🖊 Set appointments",
+								web_app : {
+									url : process.env.BASE_WEB_API + "/html/sp/set_appointment.html",
+								}
+							},
+						],
+						[
+							{
+								text: "Logout",
+								callback_data : "sp_logout"
+							},
+						],
+					]
+				}
+			}
+		)
+	}
+		/*ctx.reply("Welcome home! ", {
 			parse_mode: "markdown",
 			reply_markup: {
 				inline_keyboard: [
@@ -35,7 +65,7 @@ ServiceProvider.prototype.home = async function (ctx) {
 					[{ text: "« Logout", callback_data: "sp_logout" }],
 				],
 			},
-		});
+		});*/
 };
 
 ServiceProvider.prototype.login = function (ctx, data) {
@@ -55,7 +85,7 @@ ServiceProvider.prototype.login = function (ctx, data) {
 								{
 									text: "✅ Verify token",
 									web_app: {
-										url: "https://f55f-213-55-90-5.ngrok-free.app/projects/web-app/sp_verify.html",
+										url: process.env.BASE_WEB_API + "/projects/web-app/sp_verify.html",
 									},
 								},
 							],

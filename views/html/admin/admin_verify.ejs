@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://telegram.org/js/telegram-web-app.js?1"></script>
+    <script>
+        function setTheme() {
+            document.documentElement.className = Telegram.WebApp.colorScheme;
+        }
+
+        Telegram.WebApp.onEvent("themeChanged", setTheme)
+        setTheme()
+    </script>
+    <link rel="stylesheet" href="../../css/style.css">
+    <title>Web-App</title>
+</head>
+<body>
+    <div class="container">
+        <h2>Verify</h2>
+        <p id="caption" class="caption">Enter your verification token down here.</p>
+        <input type="text" name="token" id="token" placeholder="eyJhbGciOiJIUzI1NiIsIn">
+        <button id="verify-btn">Verify</button>
+    </div>
+   
+    <script src="../../js/script.js"></script>
+    <script src="../../js/admin/admin_verify.js"></script>
+</body>
+</html>

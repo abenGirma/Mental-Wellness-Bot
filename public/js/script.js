@@ -62,5 +62,9 @@ WebApp.prototype.showAlert = function(alert) {
 	Telegram.WebApp.showAlert(JSON.stringify(alert))
 }
 
+WebApp.prototype.showConfirm = function(alert) {
+	Telegram.WebApp.showConfirm(alert);
+}
+
 const webApp = new WebApp();
 webApp.initTheme();

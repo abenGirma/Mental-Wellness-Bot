@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://telegram.org/js/telegram-web-app.js?1"></script>
+    <script>
+        function setTheme() {
+            document.documentElement.className = Telegram.WebApp.colorScheme;
+        }
+
+        Telegram.WebApp.onEvent("themeChanged", setTheme)
+        setTheme()
+    </script>
+    <link rel="stylesheet" href="../../css/style.css">
+    <title>Web-App</title>
+</head>
+<body>
+    <div class="container">
+        <h2>Sign up</h2>
+        <p id="caption" class="caption">Complete our form accordingly.</p>
+        <input type="text" name="admin_id" id="id" placeholder="TASH ID">
+        <input type="text" name="f_name" id="f-name" placeholder="Your Name">
+        <input type="text" name="l_name" id="l-name" placeholder="Father Name">
+        <input type="email" name="email" id="email" placeholder="Email">
+        <input type="tel" name="phone_no" id="phone-no" placeholder="Mobile">
+
+        
+        <button id="signup-btn">Sign up</button>
+    </div>
+   
+    <script src="../../js/script.js"></script>
+    <script src="../../js/admin/admin_verify.js"></script>
+</body>
+</html>

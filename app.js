@@ -21,10 +21,12 @@ const {
 	isValidInitData
 } = require("./util/Validator")
 
+const { db } = require("./database/Mongo")
 /* --- DEV DEPENDANCIES --- */
 
 require("dotenv").config(); 
 const { HttpsProxyAgent } = require("https-proxy-agent"); 
+const { log } = require("console");
 
 /* --- --------------- --- */
 
@@ -32,6 +34,7 @@ const app = express();
 
 app.use(express.json());
 app.use(express.static(path.join(__dirname, "./public")));
+app.set("view engine", "ejs");
 
 app.get("/", (req, res) => {
 	console.log("requst coming in");
@@ -53,12 +56,13 @@ MongoClient.connect(process.env.MONGO_CONN , { useNewUrlParser: true, useUnified
 .then(client => {
 	const db = client.db();
 	console.log("Database connected, successfully!")
-bot.use(session(db, { collectionName: 'sessions' }));
 
-// bot.use(session());
-bot.hears("session", (ctx)=>{
-	ctx.sendMessage(ctx.session.token || "No session bruh")
-})
+// bot.use(session(db, { collectionName: 'sessions' }));
+
+// // bot.use(session());
+// bot.hears("session", (ctx)=>{
+// 	ctx.sendMessage(ctx.session.token || "No session bruh")
+// })
 
 
 /**
@@ -158,7 +162,7 @@ axios.post(process.env.API + "/service-provider/login", { email })
 	}
 })
 .catch((error) => {
-	console.log(error.response.data);
+	// console.log(error.response);
 	res.status(500).json({
 		status : "error",
 		result : {
@@ -196,40 +200,15 @@ axios.post(process.env.API +"/service-provider/verify", {token})
 			}},
 			{ upsert: true }
 		)
-		res.status(200).json({
+		res.status(200).cookie({msg: response.data.result.msg}).json({
 			status: "success",
 			result: {
 				msg: response.data.result.msg
 			}
 		})
-		
-		bot.telegram.sendMessage(userId, 
-			"Welcome Home, You have logged in successfully! \n You would be able to do your Service Provider Operation From here!",
-			{
-				reply_markup : { 
-					inline_keyboard :[
-						[
-							{
-								text: "📆 Appointments",
-								callback_data : "sp_appointments"
-							},
-						],
-						[
-							{
-								text: "📆 Set appointments",
-								callback_data : "sp_set_appointments"
-							},
-						],
-						[
-							{
-								text: "Logout",
-								callback_data : "sp_logout"
-							},
-						],
-					]
-				}
-			}
-		)
+
+		let serviceProvider = new ServiceProvider(bot);
+	    serviceProvider.home(userId);
 	} else {
 		console.log(response.data);
 		res.status(500).json({
@@ -248,6 +227,40 @@ res.status(500).json({
 	}
 })
 })	
+})
+
+app.get('/sp_edit_appointment/:appointmentId/:initData', (req, res) => {
+	//WebApp legitmacy check fails here but i'll try few things
+	let collection = db.collection("sessions");
+	const initData = req.params.initData
+
+	if(!isValidInitData(initData)){
+		res.status(401).json({
+			status: "error",
+			result: {
+				msg: "Not a valid request."
+			}
+		})
+		return;
+	}
+
+	const decodedUrlParams = new URLSearchParams(initData);
+	const userId = JSON.parse(decodedUrlParams.get("user")).id;
+
+	collection.findOne({key : `${userId}:${userId}`}).then((value) => {
+		log(value);
+	}).catch((reason)=>{
+		log(reason);
+	})
+
+	if (req.params.appointmentId)
+		axios.get(process.env.API + "/service-provider/getAppointment/" + req.params.appointmentId, {
+			token : ""
+		}).then((response) => {
+			res.render('html\\sp\\sp_edit_appointment', {
+				
+			});
+		}).catch((error) => {})
 })
 
 /**
